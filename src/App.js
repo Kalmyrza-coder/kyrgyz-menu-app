@@ -77,6 +77,7 @@ function App() {
 
 
             <ModalPage order={order} total={total} />
+            <button className="btn-reset" onClick={() => {return (setOrder([]) , setTotal([]))}}>reset</button>
             <div className="underline"></div>
           </div>
 

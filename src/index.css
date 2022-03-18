@@ -206,6 +206,17 @@ Menu
 	transition: var(--transition);
 	border-radius: var(--radius);
 }
+
+.btn-reset {
+	width:70px;
+	height:25px;
+	margin-bottom:2px;
+    background:hsl(209, 61%, 16%);
+    border-radius: 8px;
+    color:white;
+    border:none;  
+}
+
 .filter-btn:hover {
 	background: var(--clr-primary-6);
 	color: var(--clr-white);
