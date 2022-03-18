@@ -1,22 +1,19 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useContext } from "react";
+import { ConstApi } from './context/context'
 import Categories from "./components/Categories";
 import axios from "axios";
 import Menu from './components/Menu'
 import ModalPage from "./components/ModalPage";
 import logo from './image/loading-food.gif';
-import {FaSearch} from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
+import { useSpeechContext } from "@speechly/react-client";
+import { PushToTalkButtonContainer, PushToTalkButton, ErrorPanel } from "@speechly/react-ui";
 
 
 
 function App() {
-  const [menuItems, setMenuItems] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("All")
-  const [filteredFoodList, setFilteredFoodList] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [order, setOrder] = useState([])
-  const [total, setTotal] = useState([])
-  const [search, setSearch] = useState('')
-  const [inputSearch, setInputSearch] = useState([])
+  const { menuItems, setMenuItems, selectedCategory, setSelectedCategory, filteredFoodList, setFilteredFoodList, isLoading, setIsLoading, search, setSearch, inputSearch, setInputSearch, setOrder, setTotal} = useContext(ConstApi)
+  const { segment } = useSpeechContext()
 
 
   const getData = async () => {
@@ -30,8 +27,10 @@ function App() {
   }
 
   useEffect(() => {
-    getData()
-    setIsLoading(false)
+    setTimeout(() => {
+      getData()
+      setIsLoading(false)
+    }, 2000)
   }, [])
 
   useEffect(() => {
@@ -54,31 +53,53 @@ function App() {
 
   //console.log(inputSearch)
 
+
+  useEffect(() => {
+    if (segment) {
+      segment.entities.forEach((element) => {
+        if (element.type === "search") {
+          setInputSearch(prev => ({ ...prev, value: element.value }))
+        } else {
+          setInputSearch(prev => ({ ...prev, type: element.value }))
+        }
+      })
+    }
+  }, [segment])
+
   return isLoading ?
     <div className="loading-page">
       <h3>Page is loading</h3>
-      <img src={logo} alt='logo-food' style={{width: '400px', height: '400px'}} />
+      <img src={logo} alt='logo-food' style={{ width: '400px', height: '400px' }} />
     </div>
     :
     (
       <main>
+        <header>
+          <div className="basketIcon">
 
-        <div className="searchDiv">
-          <form onSubmit={(e) => e.preventDefault()} className="formInput">
-            <FaSearch className="icon" />
-            <input search={search} onChange={(e) => setSearch(e.target.value)} className="input-search" placeholder="search..." />
-          </form>
-        </div>
+            <ModalPage />
+            <button className="btn-reset" onClick={() => {return (setOrder([]), setTotal([]))}}>Reset</button>
+          </div>
 
-        <section className="menu section">
+          <div className="searchDiv">
+            <form onSubmit={(e) => e.preventDefault()} className="formInput">
+              <FaSearch className="icon" />
+              <input search={search} onChange={(e) => setSearch(e.target.value)} className="input-search" placeholder="search..." />
+            </form>
+          </div>
+
+
+          {/*<Box>
+            <PushToTalkButtonContainer>
+              <PushToTalkButton />
+              <ErrorPanel />
+            </PushToTalkButtonContainer>
+          </Box>*/}
+        </header>
+
+        <section className="menu-section">
           <div className="title">
-            <h2>our menu</h2>
-
-
-
-            <ModalPage order={order} total={total} />
-            <button className="btn-reset" onClick={() => {return (setOrder([]) , setTotal([]))}}>reset</button>
-            <div className="underline"></div>
+            <h2>Our menu</h2>
           </div>
 
           <Categories categoryList={categoryList} setSelectedCategory={setSelectedCategory} />
@@ -88,22 +109,27 @@ function App() {
           <div className="box-grid">
             {
               search.length > 1 ? (
+
                 inputSearch.map(el =>
 
-                  <Menu data={el} setOrder={setOrder} setTotal={setTotal} />
+                  <Menu data={el} />
                 )
 
               ) : (
                 filteredFoodList.map(el =>
 
-                  <Menu data={el} setOrder={setOrder} setTotal={setTotal} />
+                  <Menu data={el} />
                 )
               )
             }
           </div>
-
-
         </section>
+        <>
+          <PushToTalkButtonContainer>
+            <PushToTalkButton />
+            <ErrorPanel />
+          </PushToTalkButtonContainer>
+        </>
       </main>
     );
 }

@@ -1,13 +1,23 @@
+import {useContext} from "react";
+import {ConstApi} from "../context/context"
 
-import {Button} from '@mui/material'
 
-const Basket = ({order, tips, payment, onClose, sum}) => {
+const Basket = () => {
+  const {order, handleClose, total} = useContext(ConstApi)
+  let sum = total
+    .map((el) => el.price * el.count)
+    .reduce((amount, item) => item + amount, 0)
+    .toFixed(2);
+
+  let tips = parseInt(sum * 0.3);
+  let nums = Number(sum);
+  let payment = (nums + tips).toFixed(2);
 
   return (
     <aside >
-      <h3 style={{textAlign: "center"}}>Your Order</h3>
+      <h3 className="text-order">Your Order</h3>
 
-      {order.length === 0 &&
+      {order.length === "" &&
         <div> Basket is empty</div>}
       {order.map(el =>
       (<div key={el.id} style={{
@@ -28,7 +38,7 @@ const Basket = ({order, tips, payment, onClose, sum}) => {
         <h4>Check: ${payment}</h4>
       </div>
 
-      <Button variant='contained' onClick={onClose}>Payment</Button>
+      <button className="btn-basket" onClick={handleClose}>Payment</button>
     </aside >
   )
 }
