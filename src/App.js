@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import Testimonials from "./components/Carusel/Carusel";
 import Categories from "./components/Categories";
 import axios from "axios";
 import Menu from './components/Menu'
@@ -11,6 +12,7 @@ import Footer from "./components/Footer/Footer";
 
 
 function App() {
+
   const [menuItems, setMenuItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [filteredFoodList, setFilteredFoodList] = useState([])
@@ -102,6 +104,7 @@ function App() {
               )
             }
           </div>
+          <Testimonials />
           <Contact />
           <Footer />
 
